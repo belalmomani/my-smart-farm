@@ -1,0 +1,13 @@
+name: static-checks
+on: [push, pull_request]
+jobs:
+  checks:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Validate JSON
+        run: for f in $(git ls-files '*.json' | grep -v asmdef); do python3 -m json.tool "$f" >/dev/null || exit 1; done
+      - name: Block secrets
+        run: |
+          if git ls-files | grep -E 'google-services\.json|\.keystore|\.jks|adminsdk'; then echo "secret file tracked"; exit 1; fi
+# Unity build/tests are NOT run here: they need a Unity license (see docs/BUILD.md).
