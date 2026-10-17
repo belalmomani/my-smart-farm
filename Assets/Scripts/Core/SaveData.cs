@@ -9,17 +9,22 @@ namespace MySmartFarm.Core
         public FarmState Farm = new FarmState();
         public SimClock Clock = new SimClock();
         public string Language = "ar";
+        public int Quality = 1;          // 0 low, 1 medium, 2 high (schema v2)
+        public int ScenarioIndex = 1;    // index into Scenarios.All (schema v2)
     }
 
     public static class SaveMigrator
     {
-        public const int Current = 1;
+        public const int Current = 2;
         /// <summary>Upgrade older saves step by step. Add a case per version bump. Newer-than-known saves are rejected, never silently loaded.</summary>
         public static SaveData Migrate(SaveData d)
         {
             if (d == null || d.Farm == null || d.Clock == null) throw new InvalidDataException("corrupt save");
             if (d.SchemaVersion > Current) throw new NotSupportedException("save is from a newer app version");
-            // while (d.SchemaVersion < Current) { switch (d.SchemaVersion) { case 1: /* v1->v2 */ d.SchemaVersion = 2; break; } }
+            if (d.SchemaVersion < 2)   // v1 -> v2: price book, farm type/currency fields (defaults come from field initializers)
+            {
+                PriceBook.EnsureDefaults(d.Farm); if (d.Quality < 0 || d.Quality > 2) d.Quality = 1; d.SchemaVersion = 2;
+            }
             return d;
         }
     }

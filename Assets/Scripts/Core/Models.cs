@@ -33,7 +33,14 @@ namespace MySmartFarm.Core
         public List<Transaction> Ledger = new List<Transaction>();
         public List<FarmEvent> Events = new List<FarmEvent>();
         public List<Incubation> Incubations = new List<Incubation>();
+        // --- added in save schema v2 ---
+        public string FarmType = "";            // "" = unrestricted (tests); otherwise see FarmTypes
+        public string FarmName = "";
+        public string Currency = "JOD";
+        public bool RandomEvents = true;
+        public List<PriceEntry> Prices = new List<PriceEntry>();
     }
+    [Serializable] public class PriceEntry { public string Key; public double Value; public bool IsExample = true; }
 
     /// <summary>Biological values here are SIMULATION DEFAULTS (approximate, unsourced). Replace with cited values; see docs/DATA_SOURCES.md.</summary>
     public class SpeciesDef

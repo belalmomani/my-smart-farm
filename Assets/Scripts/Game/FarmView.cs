@@ -21,6 +21,20 @@ namespace MySmartFarm.Game
             g.transform.SetParent(transform, false); g.transform.position = pos; g.transform.localScale = scale; g.GetComponent<Renderer>().material.color = c; return g;
         }
 
+        public void Bind(Farm f, SimClock c)
+        {
+            farm = f; clock = c;
+            foreach (var kv in agents) if (kv.Value != null) Destroy(kv.Value.gameObject);
+            agents.Clear(); if (sun != null) Sync();
+        }
+        public void SetShadows(int quality)
+        {
+            if (sun == null) return;
+            sun.shadows = quality == 0 ? LightShadows.None : quality == 1 ? LightShadows.Hard : LightShadows.Soft;
+            QualitySettings.shadowDistance = quality == 0 ? 0 : quality == 1 ? 25 : 45;
+        }
+        public void SetVisible(bool v) { foreach (var r in GetComponentsInChildren<Renderer>(true)) r.enabled = v; }
+
         public void Init(Farm f, SimClock c)
         {
             farm = f; clock = c;

@@ -109,7 +109,7 @@ namespace MySmartFarm.Core
 
         public static string ToVisualLines(string text)
         {
-            var lines = text.Split('\n'); for (int k = 0; k < lines.Length; k++) lines[k] = ToVisual(lines[k]);
+            var lines = text.Replace("\r", "").Split('\n'); for (int k = 0; k < lines.Length; k++) lines[k] = ToVisual(lines[k]);
             return string.Join("\n", lines);
         }
     }
