@@ -3,6 +3,7 @@ using System;
 namespace MySmartFarm.Core
 {
     /// <summary>Unified simulation clock. 1 real hour = 1 virtual day at 1x. Driven by delta seconds (not frames) or by UTC timestamps (offline).</summary>
+    [Serializable]
     public class SimClock
     {
         public const double RealSecondsPerVirtualDay = 3600.0;

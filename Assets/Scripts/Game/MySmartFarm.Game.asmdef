@@ -1,0 +1,1 @@
+{ "name": "MySmartFarm.Game", "rootNamespace": "MySmartFarm.Game", "references": ["MySmartFarm.Core", "UnityEngine.UI"], "autoReferenced": true }

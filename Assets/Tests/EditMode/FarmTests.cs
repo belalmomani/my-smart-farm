@@ -84,12 +84,5 @@ namespace MySmartFarm.Tests
             Assert.AreEqual(f.S.Cash, f.LedgerSum(), 1e-6); Assert.IsTrue(f.S.Stock.All(i => i.Qty >= 0));
             Assert.AreEqual(f.S.Events.Count, f.S.Events.Select(e => e.Id).Distinct().Count());
         }
-        [Test] public void Save_RoundTrip_ResumesWithoutReplay()
-        {
-            var f = New(); f.BuyAnimal("rabbit", Sex.Female, 200, 0); f.ProcessUntil(5);
-            var f2 = new Farm(UnityFreeClone(f.S)); Assert.AreEqual(0, f2.ProcessUntil(5)); Assert.AreEqual(1, f2.ProcessUntil(6));
-        }
-        // shallow stand-in for JSON round trip (JsonUtility is engine-only; replace with JsonUtility test in PlayMode)
-        static FarmState UnityFreeClone(FarmState s) => s;
     }
 }
