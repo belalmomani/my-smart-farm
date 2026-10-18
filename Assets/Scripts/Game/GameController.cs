@@ -20,7 +20,7 @@ namespace MySmartFarm.Game
     /// <summary>Lifecycle, time, save/load, actions and navigation. Screens live in Screens.cs (partial).</summary>
     public partial class GameController : MonoBehaviour
     {
-        public const string Version = "0.3.0";
+        public const string Version = "0.4.0";
         sealed class LabelBind { public Text T; public Func<string> F; public string Screen; }
 
         SaveData data; Farm farm; SaveManager saves; FarmView view; Canvas canvas; bool started;
@@ -101,6 +101,7 @@ namespace MySmartFarm.Game
             int day = Day; var a = farm.S.Animals.Where(x => x.Alive && x.SpeciesId == id && farm.IsAdult(x, day)).OrderBy(x => x.BirthDay).FirstOrDefault();
             Toast(a != null && farm.SellAnimal(a.Id, day) ? Loc.Get("ok") : Loc.Get("fail"));
         }
+        void Breed(string id) { string k; farm.TryBreedAny(id, Day, out k); Toast(Loc.Get(k)); }
         void SellEggs() { int n = farm.S.InfertileEggs; Toast(n > 0 && farm.SellEggs(n, false, farm.Price("egg"), Day) ? Loc.Get("ok") : Loc.Get("fail")); }
         void Incubate() { Toast(farm.SetIncubation("chicken", farm.S.FertileEggs, Day) > 0 ? Loc.Get("ok") : Loc.Get("fail")); }
         void ToggleLang() { Loc.Lang = Loc.IsArabic ? "en" : "ar"; data.Language = Loc.Lang; RebuildUi(); Show(tab); }

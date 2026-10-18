@@ -83,5 +83,21 @@ namespace MySmartFarm.Tests
             Scenarios.Run(f.S, Scenarios.All[1], 60, 3, 1);
             Assert.AreEqual(day, f.S.LastProcessedDay); Assert.AreEqual(cash, f.S.Cash, 1e-9); Assert.AreEqual(n, f.S.Ledger.Count);
         }
+        [Test] public void BreedAny_PicksEligiblePair_AndReportsReasons()
+        {
+            var f = New(); string k;
+            f.BuyAnimal("rabbit", Sex.Female, 200, 0);
+            Assert.IsFalse(f.TryBreedAny("rabbit", 0, out k)); Assert.AreEqual("br_no_male", k);
+            f.BuyAnimal("rabbit", Sex.Male, 200, 0);
+            Assert.IsTrue(f.TryBreedAny("rabbit", 0, out k)); Assert.AreEqual("br_ok", k); Assert.AreEqual(1, f.PregnantCount("rabbit"));
+            Assert.IsFalse(f.TryBreedAny("rabbit", 1, out k)); Assert.AreEqual("br_no_female", k);
+        }
+        [Test] public void BreedAny_RejectsEggSpecies_AndImmatureFemales()
+        {
+            var f = New(); string k; f.BuyAnimal("chicken", Sex.Female, 300, 0); f.BuyAnimal("chicken", Sex.Male, 300, 0);
+            Assert.IsFalse(f.TryBreedAny("chicken", 0, out k)); Assert.AreEqual("br_no_gest", k);
+            f.BuyAnimal("goat", Sex.Female, 10, 0); f.BuyAnimal("goat", Sex.Male, 400, 0);
+            Assert.IsFalse(f.TryBreedAny("goat", 0, out k)); Assert.AreEqual("br_no_female", k);
+        }
     }
 }

@@ -94,6 +94,21 @@ namespace MySmartFarm.Core
             f.PregnantUntilDay = day + sp.GestationDays; AddEvent("conception", day, f.Id, "sire=" + m.Id); return true;
         }
 
+        /// <summary>Pairs the longest-waiting eligible adult female with any healthy adult male of the species. reasonKey is a Loc key.</summary>
+        public bool TryBreedAny(string speciesId, int day, out string reasonKey)
+        {
+            reasonKey = "fail"; var sp = SpeciesCatalog.All[speciesId];
+            if (sp.GestationDays <= 0) { reasonKey = "br_no_gest"; return false; }
+            var adults = S.Animals.Where(a => a.Alive && a.SpeciesId == speciesId && IsAdult(a, day) && a.Health >= 60).ToList();
+            var female = adults.Where(a => a.Sex == Sex.Female && a.PregnantUntilDay < 0 && day - a.LastBirthDay >= sp.RecoveryDays).OrderBy(a => a.LastBirthDay).FirstOrDefault();
+            if (female == null) { reasonKey = "br_no_female"; return false; }
+            var male = adults.FirstOrDefault(a => a.Sex == Sex.Male);
+            if (male == null) { reasonKey = "br_no_male"; return false; }
+            string r; if (!TryBreed(female.Id, male.Id, day, out r)) return false;
+            reasonKey = "br_ok"; return true;
+        }
+        public int PregnantCount(string speciesId) => S.Animals.Count(a => a.Alive && a.SpeciesId == speciesId && a.PregnantUntilDay >= 0);
+
         public int SetIncubation(string speciesId, int count, int day)
         {
             var sp = SpeciesCatalog.All[speciesId]; if (!sp.LaysEggs || count <= 0) return 0;

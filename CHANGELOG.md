@@ -1,4 +1,6 @@
 # Changelog
+## 0.4.0 — breeding button, CI
+- Added: TryBreedAny + market breeding buttons (+2 tests), plain-.NET core test project (ci/Core.Tests) + core-tests workflow, Unity test/Android build workflows, CiBuild, docs/CI.md; tests split into Unity-only and engine-free files.
 ## 0.3.0 — screens, reports, scenarios, editable prices (uncompiled)
 - Added: start screen + farm types, market, budget, reports, settings/help; editable PriceBook; seasonal needs; optional random events; alerts; CSV export; 3 scenarios with ranges; save schema v2 + migration; 12 tests.
 ## 0.2.0 — save layer, Arabic UI, placeholder 3D farm (uncompiled)

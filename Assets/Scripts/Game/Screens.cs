@@ -68,6 +68,9 @@ namespace MySmartFarm.Game
             var er = Ui.Row(c, 100);
             AddBtn(er, Ui.Blue, () => Loc.Get("sellEggs") + "\n" + farm.S.InfertileEggs + " x " + N(farm.Price("egg")), SellEggs, 28);
             AddBtn(er, Ui.Green, () => Loc.Get("incubate") + "\n" + farm.S.FertileEggs, Incubate, 28);
+            AddLabel(c, () => Loc.Get("breeding"), 36, new Color(1, .9f, .4f));
+            foreach (var id in AllowedSpecies().Where(i => SpeciesCatalog.All[i].GestationDays > 0))
+            { string sid = id; var br = Ui.Row(c, 100); AddBtn(br, Ui.Green, () => Loc.Get("breed") + " " + Loc.SpeciesName(sid) + "\n" + Loc.Get("pregnant") + ": " + farm.PregnantCount(sid), () => Breed(sid), 28); }
             AddLabel(c, () => Loc.Get("prices") + "\n" + Loc.Get("currencyNote"), 32, new Color(1, .9f, .4f));
             var keys = new List<string> { "feed_kg", "water_l", "egg" }; foreach (var id in AllowedSpecies()) { keys.Add("buy:" + id); keys.Add("sell:" + id); }
             foreach (var key in keys)
