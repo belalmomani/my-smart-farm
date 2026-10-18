@@ -15,4 +15,4 @@ google-services.json
 GoogleService-Info.plist
 firebase-adminsdk*.json
 .env
-ci/Core.Tests/*.csproj
+!ci/Core.Tests/*.csproj
