@@ -1,0 +1,72 @@
+name: unity
+# Manual run: Unity EditMode tests, then a DEBUG-signed Android build. Needs repository secrets UNITY_LICENSE, UNITY_EMAIL, UNITY_PASSWORD (see docs/CI.md).
+# Keep UNITY_VERSION identical to ProjectSettings/ProjectVersion.txt, and make sure a matching image exists: https://game.ci/docs/docker/versions
+on:
+  workflow_dispatch:
+    inputs:
+      format:
+        description: "Android output"
+        type: choice
+        options: [apk, aab]
+        default: apk
+env:
+  UNITY_VERSION: 6000.0.23f1
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    outputs:
+      ok: ${{ steps.c.outputs.ok }}
+    steps:
+      - id: c
+        env:
+          L: ${{ secrets.UNITY_LICENSE }}
+        run: |
+          if [ -n "$L" ]; then echo "ok=true" >> "$GITHUB_OUTPUT"; else echo "ok=false" >> "$GITHUB_OUTPUT"; echo "UNITY_LICENSE secret missing - see docs/CI.md"; fi
+  test:
+    needs: check
+    if: needs.check.outputs.ok == 'true'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/cache@v4
+        with:
+          path: Library
+          key: Library-test-${{ hashFiles('Packages/manifest.json', 'ProjectSettings/ProjectVersion.txt') }}
+      - uses: game-ci/unity-test-runner@v4
+        env:
+          UNITY_LICENSE: ${{ secrets.UNITY_LICENSE }}
+          UNITY_EMAIL: ${{ secrets.UNITY_EMAIL }}
+          UNITY_PASSWORD: ${{ secrets.UNITY_PASSWORD }}
+        with:
+          unityVersion: ${{ env.UNITY_VERSION }}
+          testMode: editmode
+          githubToken: ${{ secrets.GITHUB_TOKEN }}
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: unity-test-results
+          path: artifacts
+  build-android:
+    needs: test
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/cache@v4
+        with:
+          path: Library
+          key: Library-android-${{ hashFiles('Packages/manifest.json', 'ProjectSettings/ProjectVersion.txt') }}
+      - uses: game-ci/unity-builder@v4
+        env:
+          UNITY_LICENSE: ${{ secrets.UNITY_LICENSE }}
+          UNITY_EMAIL: ${{ secrets.UNITY_EMAIL }}
+          UNITY_PASSWORD: ${{ secrets.UNITY_PASSWORD }}
+        with:
+          unityVersion: ${{ env.UNITY_VERSION }}
+          targetPlatform: Android
+          buildMethod: MySmartFarm.EditorTools.CiBuild.BuildAndroid
+          customParameters: -buildFormat ${{ github.event.inputs.format }}
+          versioning: None
+      - uses: actions/upload-artifact@v4
+        with:
+          name: android-${{ github.event.inputs.format }}
+          path: build/Android

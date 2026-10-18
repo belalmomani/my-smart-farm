@@ -1,0 +1,22 @@
+name: core-tests
+# Runs on every push and can be started by hand from the Actions tab (works from a phone). Needs NO secrets and NO Unity license.
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+jobs:
+  dotnet:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 8.0.x
+      - name: Build + test core (engine-free)
+        run: dotnet test ci/Core.Tests/Core.Tests.csproj -c Release --logger "trx;LogFileName=results.trx" --logger "console;verbosity=normal"
+      - name: Upload results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: core-test-results
+          path: ci/Core.Tests/TestResults/

@@ -1,0 +1,17 @@
+name: unity-activation
+# One-time: produces a .alf file (artifact) used to obtain a Unity license (.ulf). See docs/CI.md. VERIFY the flow at https://game.ci/docs/github/activation
+on: workflow_dispatch
+env:
+  UNITY_VERSION: 6000.0.23f1
+jobs:
+  request:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: game-ci/unity-request-activation-file@v2
+        id: req
+        with:
+          unityVersion: ${{ env.UNITY_VERSION }}
+      - uses: actions/upload-artifact@v4
+        with:
+          name: ${{ steps.req.outputs.filePath }}
+          path: ${{ steps.req.outputs.filePath }}
