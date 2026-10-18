@@ -81,7 +81,8 @@ namespace MySmartFarm.Tests
             var f = New(100000); f.BuyStock("feed_kg", 20000, 0.2, 0, TxCategory.FeedPurchase); f.BuyStock("water_l", 50000, 0.01, 0, TxCategory.WaterPurchase);
             foreach (var sp in new[] { "rabbit", "chicken", "duck", "sheep", "goat", "cow" }) { f.BuyAnimal(sp, Sex.Male, 700, 0); f.BuyAnimal(sp, Sex.Female, 700, 0); }
             f.ProcessUntil(365);
-            Assert.AreEqual(f.S.Cash, f.LedgerSum(), 1e-6); Assert.IsTrue(f.S.Stock.All(i => i.Qty >= 0));
+            Assert.AreEqual(100000 + f.LedgerSum(), f.S.Cash, 1e-6);
+             Assert.IsTrue(f.S.Stock.All(i => i.Qty >= 0));
             Assert.AreEqual(f.S.Events.Count, f.S.Events.Select(e => e.Id).Distinct().Count());
         }
     }
